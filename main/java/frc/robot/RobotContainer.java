@@ -27,11 +27,18 @@ public class RobotContainer {
 
   // Replace with CommandPS4Controller or CommandJoystick if needed
   // TODO: initialize controller (CommandXboxController) 
+  private final CommandXboxController m_driverController =
+      new CommandXboxController(0);
+  private final CommmandXboxController m_operatorController = 
+      new CommandXboxController(1);
+
+  private final SendableChooser<Command> m_autoChooser = new SendableChooser<Command>();
 
   /** The container for the robot. Contains subsystems, OI devices, and commands. */
   public RobotContainer() {
-    // Configure the trigger bindings
-    configureBindings();
+    initializeAutoChooser();
+    m_driveSubsystem.setDefualtCommand(new RunCommand(() -> m_driveSubsystem.arcadeDrive(-m_driverController.getLeftY(), m_driverController.getRightX()), m_driveSubsystem));
+
   }
 
   /**
@@ -53,6 +60,10 @@ public class RobotContainer {
     m_driverController.b().whileTrue(m_exampleSubsystem.exampleMethodCommand());
     
     // TODO: configure bindings for the CommandXboxController. Button bindings are up to you, just ensure that they are valid. Bindings should include Arcade Drive, changing position of elevator, and shooting coral 
+    m_operatorController.leftBumper().whileTrue(new ElevatorMove(m_elevatorSubsystem, 0.5));
+    m_operatorController.rigthBumoper().whileTrue(new ElevatorMove (m_elevatorSubsystem, -0.5));
+    m_operatorController.b().onTrue(new ManipulatorShoot(m_manipulatorSubsystem, 1.0).withTimeOut(3.0));
+    m_operatorController.a().onTrue(new ManipulatorShoot(m_manipulatorSubsystem, -1.0).withTimeOut(3.0));
   }
 
   /**
